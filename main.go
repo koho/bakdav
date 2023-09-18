@@ -9,7 +9,6 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
-	"time"
 )
 
 var conf struct {
@@ -41,14 +40,7 @@ func backup(w http.ResponseWriter, req *http.Request) {
 		if err = os.Remove(f.Name()); err != nil {
 			return
 		}
-		if err = os.Setenv("time", time.Now().UTC().Format("200601021504")); err != nil {
-			return
-		}
-		encPass := os.ExpandEnv(conf.Password)
-		if err = os.Unsetenv("time"); err != nil {
-			return
-		}
-		if extra, err = exec.Command("7z", "a", "-p"+encPass, "-mhe=on", f.Name(), conf.Path).CombinedOutput(); err != nil {
+		if extra, err = exec.Command("7z", "a", "-p"+conf.Password, "-mhe=on", f.Name(), conf.Path).CombinedOutput(); err != nil {
 			return
 		}
 		defer os.Remove(f.Name())
